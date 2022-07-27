@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
@@ -6,11 +5,12 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
         String[] products = {"Молоко", "Хлеб", "Гречневая крупа", "Сахар", "Соль"};
-        int[] prices = {50, 14, 80, 75, 33};
+        String[] sale = {"Гречневая крупа", " Сахар"};
+        double[] prices = {50, 14, 80, 75, 33};
         int[] basket = new int[products.length];
-        int basketSum = 0;
-        int productNumber;
-        int productCount;
+        double basketSum = 0;
+        int productNumber = 0;
+        int productCount = 0;
 
         System.out.println("Список возможных товаров для покупки:");
 
@@ -64,19 +64,18 @@ public class Main {
         for (int i = 0, j = 1; i < products.length; i++) {
 
             if (basket[i] != 0) {
-
-                int sumDiscounts = ((basket[i] - basket[i] % 3) * prices[i] * 2) / 3 + basket[i] % 3 * prices[i];
-
-                System.out.println(j + ") Товара № " + (i + 1) + ". " + products[i] + ". Список товаров: "
-                        + basket[i] + " ед. Цена: " + prices[i] + " руб. за ед.товара. Всего: "
-                        + sumDiscounts + " руб.");
-                basketSum += sumDiscounts;
+                if (productNumber == 3 || productNumber == 4 && (productCount / 3) == 0) {
+                    double sumDiscounts = ((basket[i] - basket[i] % 3) * prices[i] * 2) / 3 + basket[i] % 3 * prices[i];
+                    System.out.println(j + ") Товара № " + (i + 1) + ". " + products[i] + ". " + basket[i] + " ед. Цена: " + prices[i] + " руб. за ед.товара. Всего: " + sumDiscounts + " руб.");
+                    basketSum += sumDiscounts;
+                } else {
+                    System.out.println(j + ") Товара № " + (i + 1) + ". " + products[i] + ". " + basket[i] + " ед. Цена: " + prices[i] + " руб. за ед.товара. Всего: " + (basket[i] * prices[i]) + " руб.");
+                    basketSum += prices[productNumber] * productCount;
+                }
                 j++;
             }
         }
         System.out.println("Итого " + basketSum + " руб.");
     }
-
 }
-
 
