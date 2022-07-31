@@ -1,85 +1,76 @@
+import java.util.Arrays;
 import java.util.Scanner;
 
-public class Main {
-    public static void main(String[] args) {
-
-        Scanner scanner = new Scanner(System.in);
+class Main {
+    public static void main(String[] args) throws Exception {
 
         String[] products = {"Молоко", "Хлеб", "Гречневая крупа", "Сахар", "Соль"};
-        String[] sale = {"Гречневая крупа", " Сахар"};
-        double[] prices = {50, 14, 80, 75, 33};
+        String[] discountedProducts = {"Хлеб", "Гречневая крупа",};
+        int[] price = {50, 14, 80, 75, 33};
         int[] basket = new int[products.length];
-        double basketSum = 0;
-
-        int productNumber = 0;
-        int productCount = 0;
-
-        System.out.println("Список возможных товаров для покупки:");
-
-        for (int i = 0; i < products.length; i++)
-            System.out.println(i + 1 + ". " + products[i] + " - " + prices[i] + " руб.за единицу товара.");
+        int basketSum = 0;
 
         while (true) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Список возможных товаров для покупки:");
 
-            System.out.println("Выберите товар и количество или введите `end`");
+            for (int i = 0; i < products.length; i++) {
+                System.out.println((i + 1) + ": " + products[i] + " " + price[i] + " руб/шт.");
+            }
+            System.out.println("В акции 3 по цене 2-х участвуют товары: "+Arrays.toString(discountedProducts));
+
             String input = scanner.nextLine();
-            if ("end".equals(input)) {
-                System.out.println("Программа завершена.");
+            if (input.equals("end")) {
+                System.out.println("Программа завершена!");
                 break;
             }
-
-            String[] parts = input.split(" ");
-            if (parts.length != 2) {
-                System.out.println("Некорректный ввод!!! - Введите: номер товара и количество единиц товара через пробел");
+            String[] stringsInput = input.split(" ");
+            if (stringsInput.length != 2) {
                 continue;
             }
+            String strproductNumber = String.valueOf(stringsInput[0]);
+            String strproductCount = String.valueOf(stringsInput[1]);
+            int productNumber;
+            int productCount;
             try {
-                productNumber = Integer.parseInt(parts[0]) - 1;
 
-                if (productNumber < 0 || productNumber > products.length) {
-                    System.out.println("Ошибка: Такого товара нет");
+                productNumber = Integer.parseInt(strproductNumber) - 1;
+                if ((productNumber < 0) || (productNumber + 1 > products.length)) {
+                    System.out.println("Некорректное значение выбранного продукта");
                     continue;
                 }
-            } catch (RuntimeException e) {
-                System.out.println("Введена некорректная информация");
-            }
-
-            try {
-                productCount = Integer.parseInt(parts[1]);
-
+                productCount = Integer.parseInt(strproductCount);
             } catch (NumberFormatException e) {
-
-                System.out.println("Ошибка! Введены некорректные данные!");
+                System.out.println("Введены некорректные данные");
                 continue;
             }
-
             if (productCount == 0) {
                 basket[productNumber] = 0;
             } else {
-                if (basket[productNumber] + productCount < 0) {
-                    System.out.println("Количество товаров в корзине не может быть отрицательным!");
-                    continue;
-                }
                 basket[productNumber] += productCount;
             }
         }
-
         System.out.println("Ваша корзина:");
-        for (int i = 0, j = 1; i < products.length; i++) {
+        for (int i = 0; i < basket.length; i++) {
+            boolean discount = false;
+            if (basket[i] > 0) {
 
-            if (basket[i] != 0) {
-                if (productNumber == 3 || productNumber == 4 && (productCount / 3) == 0) {
-                    double sumDiscounts = ((basket[i] - basket[i] % 3) * prices[i] * 2) / 3 + basket[i] % 3 * prices[i];
-                    System.out.println(j + ") Товара № " + (i + 1) + ". " + products[i] + ". " + basket[i] + " ед. Цена: " + prices[i] + " руб. за ед.товара. Всего: " + sumDiscounts + " руб.");
-                    basketSum += sumDiscounts;
-                } else {
-                    System.out.println(j + ") Товара № " + (i + 1) + ". " + products[i] + ". " + basket[i] + " ед. Цена: " + prices[i] + " руб. за ед.товара. Всего: " + (basket[i] * prices[i]) + " руб.");
-                    basketSum += prices[i] * basket[i];
+                for (int j = 0; j < discountedProducts.length; j++) {
+                    if (products[i].equals(discountedProducts[j])) {
+                        discount = true;
+                        int sumDiscounts = ((basket[i] - basket[i] % 3) * price[i] * 2) / 3 + basket[i] % 3 * price[i];
+                        basketSum += sumDiscounts;
+                        System.out.println(products[i] + " " + basket[i] + " шт " + price[i] + " руб/шт " + sumDiscounts + " рублей в сумме");
+                        break;
+                    }
                 }
-                j++;
+                if (!discount) {
+                    System.out.println(products[i] + " " + basket[i] + " шт " + price[i] + " руб/шт " + (basket[i] * price[i]) + " рублей в сумме");
+                    basketSum += basket[i] * price[i];
+                }
             }
         }
-        System.out.println("Итого " + basketSum + " руб.");
+        System.out.println("Итого: " + basketSum + " руб.");
     }
 }
 
